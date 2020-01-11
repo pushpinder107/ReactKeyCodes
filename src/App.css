@@ -137,12 +137,6 @@ p {
     font-size: 10px;
 }
 
-.mobile-input-div input {
-    position: fixed;
-    left: 120%;
-}
-
-
 @media (min-width: 601px) and (max-width: 980px) {
     body {
         overflow-y: auto;
