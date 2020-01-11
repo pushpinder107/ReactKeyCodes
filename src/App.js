@@ -54,7 +54,9 @@ function App() {
     const mobileInput = document.querySelector('#mobile-input')
     body.addEventListener('touchstart', (e) => {
       if (e.target.tagName === 'BUTTON') return;
-      mobileInput.focus()
+      setTimeout(() => {
+        mobileInput.focus();
+      }, 100);
     })
 
   }, []);
