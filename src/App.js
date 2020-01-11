@@ -51,11 +51,16 @@ function App() {
     const body = document.querySelector('body');
     body.addEventListener('keydown', ({key, location, which, code}) =>
       setKey({key, location, which, code}))
-    const mobileInput = document.querySelector('#mobile-input')
+    const mobileInputDiv = document.querySelector('.mobile-input-div')
     body.addEventListener('touchstart', (e) => {
+      if (document.querySelector('.mobile-input-div input') !== null) return;
       if (e.target.tagName === 'BUTTON') return;
+      const input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      mobileInputDiv.appendChild(input);
       setTimeout(() => {
-        mobileInput.focus();
+        console.log('Setting focus')
+        input.focus();
       }, 100);
     })
 
@@ -82,7 +87,7 @@ function App() {
           </div>
         </> :
         <p className="text-display">Press any key to get the JavaScript event keycode</p>}
-      <input id='mobile-input'/>
+      <div className='mobile-input-div'/>
     </div>
   );
 }

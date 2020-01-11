@@ -137,7 +137,7 @@ p {
     font-size: 10px;
 }
 
-#mobile-input {
+.mobile-input-div input {
     position: fixed;
     left: 120%;
 }
