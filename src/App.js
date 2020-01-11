@@ -59,8 +59,8 @@ function App() {
       input.setAttribute('type', 'text');
       mobileInputDiv.appendChild(input);
       setTimeout(() => {
-        console.log('Setting focus')
         input.focus();
+        input.click();
       }, 100);
     })
 
