@@ -85,7 +85,7 @@ function App() {
         <>
           <p>{keyEvent.which}</p>
           <div className='cards'>
-            <Card header='event.key'>{getNormalizedKey(keyEvent.key)}</Card>
+            <Card className={'key-card'} header='event.key'>{getNormalizedKey(keyEvent.key)}</Card>
             <Card className={'location-card'}
                   header={
                     <div>
