@@ -48,23 +48,36 @@ const getNormalizedCode = (key = '') => {
 function App() {
   const [keyEvent, setKey] = useState({});
   useEffect(() => {
-    const body = document.querySelector('body');
-    body.addEventListener('keydown', ({key, location, which, code}) =>
-      setKey({key, location, which, code}))
-    const mobileInputDiv = document.querySelector('.mobile-input-div')
-    body.addEventListener('touchstart', (e) => {
-      if (document.querySelector('.mobile-input-div input') !== null) return;
-      if (e.target.tagName === 'BUTTON') return;
-      const input = document.createElement('input');
-      input.setAttribute('type', 'text');
-      mobileInputDiv.appendChild(input);
-      setTimeout(() => {
-        input.focus();
-        input.click();
-      }, 100);
-    })
+      const body = document.querySelector('body');
+      body.addEventListener('keydown', (e) => {
+        if (!e.metaKey) {
+          e.preventDefault();
+        }
+        const { key, location, which, code } = e;
+        setKey({key, location, which, code})
+        const mobileInput = document.querySelector('.mobile-input-div input')
+        if (mobileInput) {
+          mobileInput.value = ''
+        }
+      })
+      const mobileInputDiv = document.querySelector('.mobile-input-div')
+      body.addEventListener('touchstart', (e) => {
+        if (document.querySelector('.mobile-input-div input') !== null) return;
+        if (e.target.tagName === 'BUTTON') return;
+        const input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        mobileInputDiv.appendChild(input);
+        setTimeout(() => {
+          input.focus();
+          input.click();
+        }, 100);
+      })
+    }
 
-  }, []);
+    ,
+    []
+  )
+  ;
 
   return (
     <div className="container">
@@ -78,10 +91,11 @@ function App() {
             <Card header={<div>{'event.location'}<a
               href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/location" target="_blank"
               rel="noopener noreferrer"
-              className="more-info">(?)</a></div>} className={'location-card'}>{getNormalizedLocation(keyEvent.location)}</Card>
+              className="more-info">(?)</a></div>}
+                  className={'location-card'}>{getNormalizedLocation(keyEvent.location)}</Card>
             <Card header={<div>{'event.which'} <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent"
-                                              target="_blank" rel="noopener noreferrer"
-                                              className="deprecated-link">(deprecated)</a>
+                                                  target="_blank" rel="noopener noreferrer"
+                                                  className="deprecated-link">(deprecated)</a>
             </div>}>{keyEvent.which}</Card>
             <Card header='event.code'>{getNormalizedCode(keyEvent.code)}</Card>
           </div>
