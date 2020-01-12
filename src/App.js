@@ -16,6 +16,16 @@ const KEY_LOCATIONS = {
   3: 'Numpad',
 };
 
+const getKeyCodeForAndroid = (key = '') => {
+  if ('abcdefghijklmonpqrstuvwxyz'.includes(key.toLowerCase())) {
+    return `Key${key.toUpperCase()}`
+  }
+  if ('01234567890'.includes(key)) {
+    return `Digit${key}`
+  }
+  return ''
+}
+
 const getNormalizedKey = (key = '') => {
   if (KEY_CODE_MAP[key]) {
     return KEY_CODE_MAP[key]
@@ -47,61 +57,86 @@ const getNormalizedCode = (key = '') => {
 
 function App() {
   const [keyEvent, setKey] = useState({});
+  const [onMobile, setOnMobile] = useState(false);
   useEffect(() => {
       const body = document.querySelector('body');
       body.addEventListener('keydown', (e) => {
+        if (e.target.tagName !== 'BODY') return;
         if (!e.metaKey) {
           e.preventDefault();
         }
-        const { key, location, which, code } = e;
+        const {key, location, which, code} = e;
         setKey({key, location, which, code})
-        const mobileInput = document.querySelector('.mobile-input-div input')
-        if (mobileInput) {
-          mobileInput.value = ''
-        }
       })
-      const mobileInputDiv = document.querySelector('.mobile-input-div')
+
       body.addEventListener('touchstart', (e) => {
-        if (document.querySelector('.mobile-input-div input') !== null) return;
-        if (e.target.tagName === 'BUTTON') return;
-        const input = document.createElement('input');
-        input.setAttribute('type', 'text');
-        mobileInputDiv.appendChild(input);
-        setTimeout(() => {
-          input.focus();
-          input.click();
-        }, 100);
+        if (onMobile) return;
+        setOnMobile(true)
       })
     }
-
-    ,
-    []
-  )
-  ;
+    , []
+  );
 
   return (
     <div className="container">
       <canvas width="128" height="128" hidden/>
       <FaviconDrawer number={keyEvent.which}/>
-      {keyEvent.which ?
+      {keyEvent.key ?
         <>
           <p>{keyEvent.which}</p>
           <div className='cards'>
             <Card header='event.key'>{getNormalizedKey(keyEvent.key)}</Card>
-            <Card header={<div>{'event.location'}<a
-              href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/location" target="_blank"
-              rel="noopener noreferrer"
-              className="more-info">(?)</a></div>}
-                  className={'location-card'}>{getNormalizedLocation(keyEvent.location)}</Card>
-            <Card header={<div>{'event.which'} <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent"
-                                                  target="_blank" rel="noopener noreferrer"
-                                                  className="deprecated-link">(deprecated)</a>
-            </div>}>{keyEvent.which}</Card>
+            <Card className={'location-card'}
+                  header={
+                    <div>
+                      {'event.location'}
+                      <a
+                        href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/location"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="more-info">(?)
+                      </a>
+                    </div>
+                  }
+            >
+              {getNormalizedLocation(keyEvent.location)}
+            </Card>
+            <Card header={
+              <div>{'event.which'} <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent"
+                                      target="_blank" rel="noopener noreferrer"
+                                      className="deprecated-link">(deprecated)</a>
+              </div>}>
+              {keyEvent.which}
+            </Card>
             <Card header='event.code'>{getNormalizedCode(keyEvent.code)}</Card>
           </div>
         </> :
-        <p className="text-display">Press any key to get the JavaScript event keycode</p>}
-      <div className='mobile-input-div'/>
+        <p className="text-display">Press/Tap any key to get the JavaScript event keycode</p>}
+      {onMobile &&
+      <input keyboardType="visible-password" autoCorrect={false} autoFocus={true} autoCapitalize={false}
+             aria-autocomplete={'none'} autoComplete={'new-password'}
+             spellCheck={false}
+             value={''} id={'mobile-input'}
+             onInput={e => {
+               e.persist()
+               setKey({
+                 key: e.nativeEvent.data,
+                 which: e.nativeEvent.data.toUpperCase().charCodeAt(0),
+                 location: '',
+                 code: getKeyCodeForAndroid(e.nativeEvent.data)
+               })
+             }}
+             onKeyDown={e => {
+               e.persist()
+               if (e.key === '229') return;
+               setKey({
+                 key: e.nativeEvent.key,
+                 which: e.nativeEvent.which,
+                 location: e.nativeEvent.location,
+                 code: e.nativeEvent.code
+               })
+               e.preventDefault()
+             }}/>}
     </div>
   );
 }
